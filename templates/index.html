@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f8fa">
+    <title>FitBot Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='fitbot-chat-ui-v7') }}">
+</head>
+<body>
+    <div class="chat-shell">
+        <aside class="sidebar" id="sidebar" aria-label="Chat sidebar">
+            <a class="brand" href="{{ url_for('chat') }}" aria-label="FitBot Health home">
+                <span class="brand-mark" aria-hidden="true">+</span>
+                <span><strong>FitBot</strong><small>HEALTH</small></span>
+            </a>
+
+            <button id="new_chat_button" class="new-chat-button" type="button">
+                <span aria-hidden="true">+</span> New chat
+            </button>
+
+            <div class="sidebar-section-label">YOUR CHATS</div>
+            <nav class="conversation-list" id="conversation_list" aria-label="Conversations">
+                {% for conversation in conversations %}
+                <button type="button"
+                        class="conversation-item {% if conversation.id == active_conversation_id %}active{% endif %}"
+                        data-conversation-id="{{ conversation.id }}"
+                        title="{{ conversation.title }}">
+                    <span class="conversation-icon" aria-hidden="true">◷</span>
+                    <span class="conversation-title">{{ conversation.title }}</span>
+                </button>
+                {% else %}
+                <p class="no-chats" id="no_chats">Your conversations will appear here.</p>
+                {% endfor %}
+            </nav>
+
+            <div class="sidebar-bottom">
+                <button id="health_check_button" class="model-status" type="button" aria-live="polite" title="Check chat provider status">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span id="model_status">Checking chat providers…</span>
+                    <span class="status-refresh" aria-hidden="true">↻</span>
+                </button>
+                <div class="sidebar-user">
+                    <span class="user-avatar">{{ user.username[:1] | upper }}</span>
+                    <span class="user-name">{{ user.username }}</span>
+                    <form action="{{ url_for('logout') }}" method="post">
+                        <button class="logout-button" type="submit" aria-label="Log out" title="Log out">↪</button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+
+        <main class="chat-main">
+            <header class="topbar">
+                <button id="sidebar_toggle" class="mobile-menu-button" type="button" aria-label="Open chat list" aria-expanded="false">☰</button>
+                <div class="topbar-title">
+                    <span class="topbar-brand">FitBot Health</span>
+                    <h1 id="conversation_heading">{% if conversations %}{{ conversations[0].title }}{% else %}New conversation{% endif %}</h1>
+                </div>
+                <div class="topbar-actions">
+                    <label class="language-control" for="language_select">
+                        <span class="language-symbol" aria-hidden="true">文</span>
+                        <select id="language_select" aria-label="Reply language">
+                            {% for language in supported_languages %}
+                            <option value="{{ language.code }}" {% if language.code == default_language %}selected{% endif %}>{{ language.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <button id="delete_chat_button" class="header-icon-button" type="button" aria-label="Delete this conversation" title="Delete conversation">⌫</button>
+                </div>
+            </header>
+
+            <section class="chat-content" aria-label="Conversation">
+                <div class="messages" id="messages" aria-live="polite" aria-relevant="additions text">
+                    <section class="empty-state" id="empty_state" {% if messages %}hidden{% endif %}>
+                        <div class="empty-mark" aria-hidden="true">+</div>
+                        <p class="empty-eyebrow">YOUR HEALTH COMPANION</p>
+                        <h2>What would you like to ask?</h2>
+                        <p class="empty-copy">Get clear, general health information and thoughtful next steps.</p>
+                        <div class="suggestion-grid" id="suggestions">
+                            {% for prompt in quick_prompts %}
+                            <button class="suggestion-card" type="button" data-prompt="{{ prompt }}">
+                                <span>{{ prompt }}</span><span class="suggestion-arrow" aria-hidden="true">↗</span>
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </section>
+                </div>
+
+                <div class="composer-area">
+                    {% if openrouter_configured %}
+                    <p class="health-note"><strong>Privacy:</strong> Messages and recent chat context go to OpenRouter’s free model route. Avoid names or sensitive details. Ollama is the local backup. <strong>FitBot is for general education, not diagnosis or prescriptions.</strong> For emergencies, contact local services.</p>
+                    {% else %}
+                    <p class="health-note"><strong>Local mode:</strong> OpenRouter key is not set, so messages use Ollama on this computer. Adding a key sends messages and recent chat context to OpenRouter. Avoid names or sensitive details. <strong>FitBot is for general education, not diagnosis or prescriptions.</strong></p>
+                    {% endif %}
+                    <div class="composer" id="composer">
+                        <textarea id="user_input" rows="1" maxlength="2000" placeholder="Message FitBot…" aria-label="Message FitBot"></textarea>
+                        <button id="send_button" class="send-button" type="button" aria-label="Send message" title="Send message">
+                            <span aria-hidden="true">↑</span>
+                        </button>
+                    </div>
+                    <div class="composer-hint"><span>Enter to send · Shift + Enter for a new line</span><span>Ask naturally · request more detail whenever you want</span></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.__FITBOT__ = {
+            activeConversationId: {{ active_conversation_id | tojson }},
+            conversations: {{ conversations | tojson }},
+            messages: {{ messages | tojson }},
+            quickPrompts: {{ quick_prompts | tojson }},
+            defaultLanguage: {{ default_language | tojson }},
+            openrouterConfigured: {{ openrouter_configured | tojson }}
+        };
+    </script>
+    <script src="{{ url_for('static', filename='script.js', v='fitbot-chat-ui-v7') }}"></script>
+</body>
+</html>

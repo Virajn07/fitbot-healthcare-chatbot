@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | FitBot AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+    <main class="auth-shell">
+        <section class="auth-panel">
+            <p class="eyebrow">Welcome Back</p>
+            <h1>Login to FitBot AI</h1>
+            <p class="auth-copy">Sign in to access your private AI chats and conversation history.</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form class="auth-form" method="post">
+                <label>
+                    Username
+                    <input type="text" name="username" required>
+                </label>
+                <label>
+                    Password
+                    <input type="password" name="password" required>
+                </label>
+                <button class="primary-button" type="submit">Login</button>
+            </form>
+
+            <p class="auth-footer">
+                No account yet?
+                <a href="{{ url_for('signup') }}">Create one</a>
+            </p>
+        </section>
+    </main>
+</body>
+</html>
