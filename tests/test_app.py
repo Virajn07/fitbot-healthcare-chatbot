@@ -30,6 +30,13 @@ class FitBotAppTests(unittest.TestCase):
         client = client or self.client
         return client.post('/signup', data={'username': username, 'password': 'secure-demo-password'})
 
+    def test_auth_pages_load_the_versioned_stylesheet(self):
+        for path in ('/login', '/signup'):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(b'/static/style.css?v=auth-layout-v1', response.data)
+
     def test_signup_shows_persisted_starter_conversation_and_login_restores_it(self):
         response = self.create_account()
         self.assertEqual(response.status_code, 302)
