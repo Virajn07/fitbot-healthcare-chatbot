@@ -34,7 +34,7 @@
    .\Start-FitBot.cmd
    ```
 
-5. Open <http://127.0.0.1:5000> and create a local demo account. The launcher starts Ollama in the background when it finds the model, then starts FitBot and opens the chat.
+5. Open <http://127.0.0.1:5000> and create a local demo account. FitBot opens with a saved sample conversation so the chat is ready to explore; this sample is created locally and does not call a model. The launcher starts Ollama in the background when it finds the model, then starts FitBot and opens the chat.
 
 </details>
 
@@ -76,7 +76,7 @@ The default model reply is a short, plain-language answer of about three to four
 
 ## ✨ Features
 
-- Responsive chat layout with account sign-in, saved conversations, new-chat and delete controls.
+- Responsive chat layout with account sign-in, a ready-made starter conversation, saved conversations, new-chat and delete controls.
 - Streaming assistant replies, readable Markdown, and language selection.
 - OpenRouter `openrouter/free` as the optional primary model; local Ollama `qwen3:8b` as backup.
 - Startup and health checks that report whether the model service and configured model are available.

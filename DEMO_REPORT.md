@@ -19,7 +19,7 @@ This is a classroom prototype, not a medical device or diagnostic system. It doe
 
 ## Technology
 
-Flask serves the app and stores demonstration accounts and conversations in a local JSON data file. The backend sends streamed chat completions to OpenRouter and parses the server-sent events; Ollama uses its local `/api/chat` endpoint. Both flow into the browser as streamed NDJSON events. Health checks inspect key configuration and local Ollama availability without consuming an OpenRouter request.
+Flask serves the app and stores demonstration accounts and conversations in a local JSON data file. New accounts open with a saved, model-free starter exchange. The backend sends streamed chat completions to OpenRouter and parses the server-sent events; Ollama uses its local `/api/chat` endpoint. Both flow into the browser as streamed NDJSON events. Health checks inspect key configuration and local Ollama availability without consuming an OpenRouter request.
 
 ## Demo scenarios
 

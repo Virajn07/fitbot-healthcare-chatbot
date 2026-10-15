@@ -67,7 +67,7 @@ def get_session_secret_key(instance_path):
 app = Flask(__name__)
 os.makedirs(app.instance_path, exist_ok=True)
 app.config['SECRET_KEY'] = get_session_secret_key(app.instance_path)
-app.config['BUILD_ID'] = 'fitbot-chat-ui-v7'
+app.config['BUILD_ID'] = 'fitbot-chat-ui-v8'
 app.config['DATA_FILE'] = os.path.join(app.instance_path, 'fitbot_data.json')
 app.config['OLLAMA_BASE_URL'] = os.environ.get('OLLAMA_BASE_URL', 'http://127.0.0.1:11434').rstrip('/')
 app.config['OLLAMA_MODEL'] = os.environ.get('OLLAMA_MODEL', 'qwen3:8b')
@@ -84,6 +84,13 @@ QUICK_PROMPTS = [
     'What does a healthy blood pressure range mean?',
     'How can I manage stress today?',
 ]
+
+STARTER_EXCHANGE = (
+    'What are simple habits for better sleep?',
+    'A steady sleep and wake time, a quiet wind-down routine, and limiting late-day caffeine may help. '
+    'Keep the room comfortable and dim, and try putting screens away before bed. If sleep problems persist '
+    'or affect your daily life, consider speaking with a healthcare professional.',
+)
 
 DEMO_CASES = [
     {'title': 'Everyday prevention', 'prompt': 'What are three realistic habits that support heart health?', 'expectation': 'General, low-risk habits; no diagnosis or guaranteed outcome.'},
@@ -222,7 +229,8 @@ init_store()
 def login_required(view):
     @wraps(view)
     def wrapped_view(*args, **kwargs):
-        if not session.get('user_id'):
+        if current_user() is None:
+            session.clear()
             return redirect(url_for('login'))
         return view(*args, **kwargs)
 
@@ -277,7 +285,14 @@ def get_or_create_latest_conversation(user_id):
     conversations = get_conversations_for_user(user_id)
     if conversations:
         return conversations[0]['id']
-    return create_conversation(user_id)
+    return create_starter_conversation(user_id)
+
+
+def create_starter_conversation(user_id):
+    conversation_id = create_conversation(user_id, title='A simple sleep routine')
+    add_message(conversation_id, 'user', STARTER_EXCHANGE[0])
+    add_message(conversation_id, 'assistant', STARTER_EXCHANGE[1])
+    return conversation_id
 
 
 def add_message(conversation_id, role, content, reasoning_details=None):
@@ -614,6 +629,7 @@ def signup():
         }
         store['users'].append(user)
         save_store(store)
+        session.clear()
         session['user_id'] = user['id']
         return redirect(url_for('chat'))
 
@@ -631,6 +647,7 @@ def login():
             flash('Invalid username or password.')
             return render_template('login.html')
 
+        session.clear()
         session['user_id'] = user['id']
         return redirect(url_for('chat'))
 

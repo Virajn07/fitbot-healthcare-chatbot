@@ -4,7 +4,7 @@ setlocal EnableExtensions
 set "PROJECT=%~dp0"
 set "OLLAMA_URL=http://127.0.0.1:11434/api/tags"
 set "FITBOT_URL=http://127.0.0.1:5000/api/version"
-set "FITBOT_BUILD=fitbot-chat-ui-v7"
+set "FITBOT_BUILD=fitbot-chat-ui-v8"
 set "MODEL_TAG=qwen3:8b"
 
 if not exist "%PROJECT%app.py" (
